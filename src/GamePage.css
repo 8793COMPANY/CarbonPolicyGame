@@ -1,0 +1,564 @@
+/* GamePage.css */
+
+/* ✅ 스크롤 제거 및 기본 여백 초기화 */
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    /* background: url('/background.png') no-repeat center center fixed; */
+    background-size: cover;
+    overflow: hidden;
+    /* 🔒 스크롤 완전 차단 */
+    touch-action: none;
+    /* 🔒 모바일 터치 드래그도 방지 */
+}
+
+.top-header {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 550px;
+    background-color: black;
+    padding: 20px 0;
+    z-index: 3;
+    text-align: center;
+
+    background: linear-gradient(to right, #001020, #0b1f30);
+    color: white;
+    font-weight: bold;
+    font-size: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(4px);
+    /* 💡 흐림 추가 */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.top-header h2 {
+    font-size: 30px;
+    color: white;
+    margin: 0;
+    font-weight: 600;
+}
+
+/* ✅ 전체 중앙 배치 */
+.game-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+    text-align: center;
+    overflow: hidden;
+}
+
+/* ✅ 가운데 남색 오버레이 */
+.dark-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+    margin: auto;
+    /* 카드보다 넓게 */
+    width: 550px;
+    height: 100%;
+    /* background-color: #0b2a36; */
+
+    /* 남색 반투명 */
+    background-color: rgba(0, 11, 34, 0.6);
+    pointer-events: none;
+    overflow: hidden;
+
+    /* ✅ 부드러운 가장자리 효과 */
+    box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.4),
+        0 0 120px 40px rgba(0, 0, 0, 0.3);
+    /* 필요 시 카드와 일치 */
+    /* border-radius: 12px; */
+}
+
+.dark-overlay::after {
+    content: '';
+    position: absolute;
+    top: -40px;
+    left: -40px;
+    right: -40px;
+    bottom: -40px;
+    z-index: 1;
+    pointer-events: none;
+
+    background: radial-gradient(ellipse at center,
+            rgba(0, 0, 0, 0.4) 0%,
+            rgba(0, 0, 0, 0) 100%);
+
+    backdrop-filter: blur(12px);
+    filter: blur(4px);
+}
+
+.game-header {
+    position: relative;
+    z-index: 2;
+    /* 오버레이 위 */
+    color: white;
+    text-align: center;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 450px;
+    pointer-events: none;
+}
+
+/* ✅ 카드가 겹치는 스택 영역 */
+.card-stack {
+    position: relative;
+    width: 380px;
+    height: 520px;
+    z-index: 4;
+}
+
+.card-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 18px;
+    overflow: hidden;
+    z-index: 0;
+    background-image: url('/card_background.png');
+    background-size: cover;
+    background-position: center;
+    opacity: 1;
+    pointer-events: none;
+
+    /* 테두리 효과처럼 보이게 */
+    box-shadow: 0 0 0 2px #f4e2b6 inset;
+}
+
+.card-background img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.2;
+    pointer-events: none;
+}
+
+.card-description {
+    font-size: 15px;
+    margin: 10px 0;
+    color: #333;
+    font-style: italic;
+}
+
+.card-effects {
+    font-size: 14px;
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 0 0;
+    color: #222;
+}
+
+/* ✅ TinderCard wrapper */
+.tinder-card {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* ✅ 개별 카드 스타일 */
+.card {
+    width: 100%;
+    height: 100%;
+    /* padding: 20px; */
+    box-sizing: border-box;
+    border-radius: 12px;
+    background-color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    /* 텍스트 선택 방지 */
+    user-select: none;
+    /* 이미지 드래그 방지 (Webkit 브라우저용) */
+    -webkit-user-drag: none;
+}
+
+/* ✅ 이미지 스타일 */
+.card img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    /* 클릭도 막고 드래그도 방지 */
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
+}
+
+/* ✅ 카드 텍스트 */
+.card p {
+    font-size: 16px;
+    color: #333;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.swipe-label {
+    position: absolute;
+    top: 16px;
+    font-size: 22px;
+    font-weight: bold;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0.8;
+}
+
+.swipe-label.left {
+    left: 16px;
+    color: #e53e3e;
+}
+
+.swipe-label.right {
+    right: 16px;
+    color: #38a169;
+}
+
+.intro-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: white;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 2s ease;
+    opacity: 1;
+}
+
+.intro-screen h1 {
+    font-size: 32px;
+    margin-bottom: 16px;
+}
+
+.intro-screen button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 18px;
+    border-radius: 8px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.intro-screen.fade-out {
+    opacity: 0;
+    /* 버튼 눌린 뒤 클릭 안 되게 */
+    pointer-events: none;
+}
+
+.intro-content {
+    color: white;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 40px;
+    border-radius: 12px;
+}
+
+.fade-in {
+    animation: fadeInUp 1.2s ease forwards;
+    opacity: 0;
+}
+
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.top-header h2 {
+    animation: fadeInDown 1s ease;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes flashWarning {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.disaster-warning {
+    animation: flashWarning 1.2s ease-in-out infinite;
+}
+
+.fade-in-card {
+    animation: fadeInCard 0.1s ease-in;
+}
+
+@keyframes fadeInCard {
+    from {
+        opacity: 0;
+        transform: scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.research-glow-in-card {
+    animation: researchGlowIn 0.8s ease-out;
+}
+
+@keyframes researchGlowIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.96);
+        box-shadow: 0 0 0 rgba(255, 193, 7, 0);
+    }
+
+    50% {
+        opacity: 1;
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 0 12px rgba(255, 193, 7, 0.4);
+    }
+
+    100% {
+        transform: translateY(0) scale(1);
+        box-shadow: 0 0 0 rgba(255, 193, 7, 0);
+    }
+}
+
+.flash-shake-in-card {
+    animation: flashShakeIn 1s ease-in;
+}
+
+@keyframes flashShakeIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.97) translate(0, 0);
+        filter: brightness(160%);
+    }
+
+    10% {
+        transform: scale(1) translate(-8px, -2px);
+    }
+
+    20% {
+        opacity: 1;
+        transform: translate(8px, 2px);
+    }
+
+    30% {
+        transform: translate(-6px, -1px);
+    }
+
+    40% {
+        transform: translate(6px, 1px);
+    }
+
+    50% {
+        transform: translate(-4px, 0);
+    }
+
+    60% {
+        transform: translate(4px, 0);
+    }
+
+    70% {
+        transform: translate(-2px, 0);
+    }
+
+    80% {
+        transform: translate(2px, 0);
+    }
+
+    90% {
+        transform: translate(0, 0);
+    }
+
+    100% {
+        transform: translate(0, 0);
+        filter: brightness(100%);
+    }
+}
+
+.research-warning {
+    animation: pulseGlowResearch 2s ease-in-out infinite;
+}
+
+@keyframes pulseGlowResearch {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.6;
+        transform: scale(1.02);
+    }
+}
+
+.research-effect-popup {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #fff3e0;
+    color: #e65100;
+    font-weight: bold;
+    padding: 16px 24px;
+    border-radius: 12px;
+    box-shadow: 0 0 16px rgba(255, 152, 0, 0.5);
+    animation: popupFade 5s ease-in-out forwards;
+    z-index: 999;
+    font-size: 20px;
+}
+
+.research-effect-popup .popup-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.research-effect-popup ul {
+    margin-top: 12px;
+    padding-left: 0;
+    list-style: none;
+    font-size: 16px;
+    color: #444;
+    line-height: 1.6;
+}
+
+.research-effect-popup .icon {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 12px;
+    animation: pulse 1.2s infinite;
+}
+
+.research-effect-popup p {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+}
+
+@keyframes popupFade {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -10px);
+    }
+
+    20% {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+
+    80% {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -10px);
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+.ending-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.ending-content {
+    background: #1e1e1e;
+    padding: 40px;
+    border-radius: 16px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+}
+
+.ending-buttons {
+    margin-top: 50px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.ending-buttons button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    background-color: #ffffff22;
+    color: white;
+    background-color: #92b693;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.ending-buttons button:hover {
+    background-color: #ffffff44;
+}
