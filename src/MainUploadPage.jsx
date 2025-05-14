@@ -417,18 +417,21 @@ function MainUploadPage() {
           </button>
 
           {/* 🎴 테스트 이동 버튼 바로 아래에! */}
-          <button
-            onClick={() => navigate('/game')}
-            style={{
-              padding: '10px 20px',
-              backgroundColor: '#eee',
-              border: '1px solid #ccc',
-              borderRadius: '6px',
-              cursor: 'pointer'
-            }}
-          >
-            🎴 게임 화면 테스트로 이동
-          </button>
+          {process.env.NODE_ENV === 'development' && (
+            <button
+              onClick={() => navigate('/game')}
+              style={{
+                padding: '10px 20px',
+                backgroundColor: '#eee',
+                border: '1px solid #ccc',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                marginTop: '20px'
+              }}
+            >
+              🎴 게임 화면 테스트로 이동
+            </button>
+          )}
         </div>
 
         {showErrors && errorMessages.length > 0 && (

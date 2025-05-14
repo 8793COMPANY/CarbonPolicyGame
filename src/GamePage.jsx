@@ -133,20 +133,22 @@ function GamePage() {
     }, [currentCard]);
 
     // 연구 카드 추가 효과 팝업 테스트용
-    // useEffect(() => {
-    //     const handleKey = (e) => {
-    //         if (e.key === 'r') {
-    //             setShowResearchPopup(true);
-    //             setTimeout(() => {
-    //                 console.log('⏰ 팝업 끄기');
-    //                 setShowResearchPopup(false);
-    //             }, 5000);  // 확실히 시간 지정
-    //         }
-    //     };
+    useEffect(() => {
+        if (process.env.NODE_ENV !== 'development') return; // ✅ 프로덕션이면 아예 무시
+        
+        const handleKey = (e) => {
+            if (e.key === 'r') {
+                setShowResearchPopup(true);
+                setTimeout(() => {
+                    console.log('⏰ 팝업 끄기');
+                    setShowResearchPopup(false);
+                }, 5000);  // 확실히 시간 지정
+            }
+        };
 
-    //     window.addEventListener('keydown', handleKey);
-    //     return () => window.removeEventListener('keydown', handleKey);
-    // }, [])
+        window.addEventListener('keydown', handleKey);
+        return () => window.removeEventListener('keydown', handleKey);
+    }, [])
 
     useEffect(() => {
         console.log('[🔍 Popup State] showResearchPopup:', showResearchPopup);
