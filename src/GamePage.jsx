@@ -58,10 +58,13 @@ function GamePage() {
         (s) => String(s.data?.['번호']) === String(endingType)
     );
     const endingImage = endingScenario?.image;
-    const endingText = endingScenario?.data?.['텍스트'] || '결과 텍스트 없음';
+    const endingText = endingScenario?.data?.['텍스트'] || '카드 개수 부족';
 
     // pickNextCard 중복 호출 방지용 플래그
     const pickCardCalled = useRef(false);
+
+    // 턴수 설정
+    const maxTurn = 50;
 
     useEffect(() => {
         const uploaded = JSON.parse(localStorage.getItem('matchedCards')) || [];
@@ -105,6 +108,11 @@ function GamePage() {
         console.log('[🎴 초기 카드 목록]', parsed);
         console.log('[📌 최초 카드]', parsed[Math.floor(Math.random() * parsed.length)]);
 
+        // ✅ Game 시작 시 카드 수량 체크
+        const playableCards = parsed.filter(card => card.type !== '연구완성');
+        if (playableCards.length < maxTurn) {
+            alert(`⚠️ 현재 YES 가능한 카드 수는 ${playableCards.length}장입니다.\n${maxTurn}턴을 모두 진행하기엔 부족할 수 있습니다.`);
+        }
         // pickNextCard(parsed, []); // ✅ 연구완성 제외된 카드 중 랜덤 1장 뽑기
     }, []);
 
@@ -135,7 +143,7 @@ function GamePage() {
     // 연구 카드 추가 효과 팝업 테스트용
     useEffect(() => {
         if (process.env.NODE_ENV !== 'development') return; // ✅ 프로덕션이면 아예 무시
-        
+
         const handleKey = (e) => {
             if (e.key === 'r') {
                 setShowResearchPopup(true);
@@ -185,10 +193,10 @@ function GamePage() {
         console.log('전체 카드 수:', cards.length);
         console.log('YES 선택된 카드 수:', yesSelected.length);
 
-        if (yesSelected.length >= 20) {
-            console.warn('[⚠️ 중단] YES 카드 20장 도달');
-            return;
-        }
+        // if (yesSelected.length >= 50) {
+        //     console.warn('[⚠️ 중단] YES 카드 50장 도달');
+        //     return;
+        // }
 
         // 카드번호 기준으로 YES 카드를 제외
         const yesCardNumbers = yesSelected.map(c => c.cardNumber);
@@ -196,25 +204,47 @@ function GamePage() {
 
         console.log('남은 후보 카드 수:', candidates.length);
 
-        if (candidates.length === 0) {
-            console.warn('[🚫 후보 없음] currentCard를 null로 설정');
-            setCurrentCard(null);
-        } else {
-            const next = candidates[Math.floor(Math.random() * candidates.length)];
-            console.log('[🎯 다음 카드 선택됨]', next);
-
-            // ✅ currentCard를 null로 만든 다음, 다음 프레임에서 다시 설정
-            setCurrentCard(null);
-
-            // ✅ 다음 카드 설정 완료 후 다시 pick 가능하도록 해제
-            setTimeout(() => {
-                setCurrentCard(next);
-                console.log('[✅ setCurrentCard 호출됨]', next);
-
-                pickCardCalled.current = false;
-                setIsSwiping(false);
-            }, 100); // 살짝 딜레이를 줘야 정확
+        // ✅ 카드가 없거나 턴 수 도달 시 종료
+        if (candidates.length === 0 || yesSelected.length >= maxTurn) {
+            alert('🚨 더 이상 진행할 수 있는 카드가 없어 게임을 종료합니다.');
+            setShowEnding(true);
+            return;
         }
+
+        const next = candidates[Math.floor(Math.random() * candidates.length)];
+        console.log('[🎯 다음 카드 선택됨]', next);
+
+        // ✅ currentCard를 null로 만든 다음, 다음 프레임에서 다시 설정
+        setCurrentCard(null);
+
+        // ✅ 다음 카드 설정 완료 후 다시 pick 가능하도록 해제
+        setTimeout(() => {
+            setCurrentCard(next);
+            console.log('[✅ setCurrentCard 호출됨]', next);
+
+            pickCardCalled.current = false;
+            setIsSwiping(false);
+        }, 100); // 살짝 딜레이를 줘야 정확
+
+        // if (candidates.length === 0) {
+        //     console.warn('[🚫 후보 없음] currentCard를 null로 설정');
+        //     setCurrentCard(null);
+        // } else {
+        //     const next = candidates[Math.floor(Math.random() * candidates.length)];
+        //     console.log('[🎯 다음 카드 선택됨]', next);
+
+        //     // ✅ currentCard를 null로 만든 다음, 다음 프레임에서 다시 설정
+        //     setCurrentCard(null);
+
+        //     // ✅ 다음 카드 설정 완료 후 다시 pick 가능하도록 해제
+        //     setTimeout(() => {
+        //         setCurrentCard(next);
+        //         console.log('[✅ setCurrentCard 호출됨]', next);
+
+        //         pickCardCalled.current = false;
+        //         setIsSwiping(false);
+        //     }, 100); // 살짝 딜레이를 줘야 정확
+        // }
 
         // pickNextCard 내부 로그
         console.log('[📍 pickNextCard]', {
@@ -324,8 +354,8 @@ function GamePage() {
             const nextIndex = direction === 'right' ? currentIndex + 1 : currentIndex;
             setCurrentIndex(nextIndex);
 
-            // ✅ 20턴 도달 시 종합 평가
-            if (nextIndex === 20) {
+            // ✅ 50턴 도달 시 종합 평가
+            if (nextIndex === maxTurn) {
                 let finalEnding = 2;
                 if (nextCarbon > 0) finalEnding = 6;
                 else if (nextBudget < 0 && nextHappiness >= 0) finalEnding = 3;
@@ -517,7 +547,7 @@ function GamePage() {
                                     marginBottom: '4px',
                                     fontWeight: '500'
                                 }}>
-                                    🎲 턴 {currentIndex + 1} / {20} 🎲
+                                    🎲 턴 {currentIndex + 1} / {maxTurn} 🎲
                                 </p>
 
                                 <p>드래그로 카드를 좌우로 넘겨보세요</p>
@@ -634,16 +664,16 @@ function GamePage() {
                                                             maxWidth: '180px',         // ✅ 너비 제한!
                                                             margin: '0 auto',          // ✅ 가운데 정렬
                                                             lineHeight: '1.3',
-                                                            fontSize: '18px',
+                                                            fontSize: '20px'
                                                         }}
                                                     >
-                                                        {currentCard.title}
+                                                        {currentCard.type}
                                                     </div>
                                                     <div style={{ textAlign: 'right' }}>✅ Yes</div>
                                                 </div>
 
                                                 {/* 본문 */}
-                                                {/* ⬆️ 상단: 아이콘 + 유형 */}
+                                                {/* ⬆️ 상단: 카드 유형 아이콘 + 카드 제목 */}
                                                 <div style={{ textAlign: 'center' }}>
                                                     <div style={{
                                                         width: '82px',
@@ -661,8 +691,8 @@ function GamePage() {
                                                     }}>
                                                         {cardTypeStyles[currentCard.type]?.icon}
                                                     </div>
-                                                    <div style={{ fontWeight: 'bold', fontSize: '20px', marginTop: '10px', color: cardTypeStyles[currentCard.type]?.color }}>
-                                                        {currentCard.type}
+                                                    <div style={{ fontWeight: 'bold', fontSize: '22px', marginTop: '20px', color: cardTypeStyles[currentCard.type]?.color, textAlign: 'center' }}>
+                                                        {currentCard.title}
                                                     </div>
 
                                                     {/* ✅ 안내 메시지: 재난 유형일 때만 */}

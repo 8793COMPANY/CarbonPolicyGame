@@ -167,9 +167,20 @@ function MainUploadPage() {
       //   errors.push(`🖼️ 카드 이미지 파일명 오류: ${invalidCardImageNames.map(f => f.name).join(', ')}`);
       // }
 
-      const invalidScenarioImageNames = scenarioImages.filter(file => !/^\d+_/.test(file.name));
-      if (invalidScenarioImageNames.length > 0) {
-        errors.push(`🎬 시나리오 이미지 파일명 오류: ${invalidScenarioImageNames.map(f => f.name).join(', ')}`);
+      const invalidScenarioImageMessages = scenarioImages
+        .map(file => {
+          const name = file.name;
+          if (!/^\d+_/.test(name)) {
+            if (!/^\d+/.test(name)) return `❌ ${name} → 앞에 숫자가 없습니다`;
+            if (!/^\d+_/.test(name)) return `❌ ${name} → 숫자 뒤에 '_'가 없습니다`;
+            return `❌ ${name} → 형식 오류`;
+          }
+          return null;
+        })
+        .filter(Boolean);
+
+      if (invalidScenarioImageMessages.length > 0) {
+        errors.push(`🎬 시나리오 이미지 파일명 오류:\n` + invalidScenarioImageMessages.join('\n'));
       }
 
       // 3️⃣ 카드 매칭
@@ -271,7 +282,8 @@ function MainUploadPage() {
         <p style={{ fontSize: '16px', lineHeight: '1.6', marginBottom: '50px' }}>
           왼쪽 영역에서는 <strong>시나리오 설명 엑셀</strong>과 <strong>시나리오 이미지</strong>를 업로드하고,<br />
           오른쪽 영역에서는 <strong>카드 정보 엑셀</strong>을 업로드해주세요.<br /><br />
-          번호(예: 1, 2...)를 기준으로 이미지 파일명과 엑셀 데이터가 자동으로 매칭됩니다.<br />
+          번호를 기준으로 이미지 파일명과 엑셀 데이터가 자동으로 매칭됩니다.<br />
+          예를 들어, 엑셀에서 번호가 <strong>3</strong>인 행이 있다면, <code>3_scenario.jpg</code>, <code>3_scenario.png</code> 등의 이미지와 연결됩니다.
           {/* 왼쪽 영역에서는 <strong>카드 이미지</strong>와 <strong>카드 정보 엑셀</strong>을 업로드하고,<br />
           오른쪽 영역에서는 <strong>시나리오 이미지</strong>와 <strong>시나리오 설명 엑셀</strong>을 업로드해주세요.<br /><br />
           번호(예: 1, 2...)를 기준으로 이미지 파일명과 엑셀 데이터가 자동으로 매칭됩니다.<br />
@@ -370,7 +382,7 @@ function MainUploadPage() {
               </div>
             )}
             {cardExcelData.length > 0 && (
-              <button onClick={resetCardExcel} style={{ marginTop: '8px', fontSize: '12px' }}>❌ 초기화</button>
+              <button onClick={resetCardExcel} style={{ marginTop: '8px', fontSize: '12px', backgroundColor: '#ddd' }}>❌ 초기화</button>
             )}
           </div>
 
@@ -394,7 +406,7 @@ function MainUploadPage() {
               </div>
             )}
             {scenarioExcelData.length > 0 && (
-              <button onClick={resetScenarioExcel} style={{ marginTop: '8px', fontSize: '12px' }}>❌ 초기화</button>
+              <button onClick={resetScenarioExcel} style={{ marginTop: '8px', fontSize: '12px', backgroundColor: '#ddd' }}>❌ 초기화</button>
             )}
           </div>
         </div>
